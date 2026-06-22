@@ -1,6 +1,6 @@
 **Thalamocortical and Autonomic Dysregulation in Cognitive Impairment: 1D-Inception Neural Network Analysis of Sleep Biosignals**
 
-*Final Year Project 2026*
+*Final Year Project 2026 (CogniFlow)*
 
 Overview
 This repository contains the deployment codebase for a multi-modal deep learning pipeline designed to screen for Cognitive Impairment using raw sleep polysomnography (PSG) data. By fusing high-frequency electrophysiological waveforms (EEG and ECG) with static clinical demographics (Age, Sex, BMI), this project demonstrates the feasibility of automated, non-invasive cognitive diagnostics.
