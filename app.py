@@ -15,7 +15,7 @@ import os
 st.set_page_config(
     page_title="COGNIFLOW · Cognitive Impairment Predictor",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 st.markdown("""
@@ -28,28 +28,9 @@ html, body, [class*="css"] {
 }
 
 /* ── Hide Streamlit chrome ── */
-#MainMenu, footer, header { visibility: hidden; }
+#MainMenu, footer { visibility: hidden; }
+header { background: transparent !important; }
 .block-container { padding: 0 !important; }
-
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: #0A1628 !important;
-    border-right: 0.5px solid rgba(255,255,255,0.07);
-}
-[data-testid="stSidebar"] * { color: rgba(255,255,255,0.75) !important; }
-[data-testid="stSidebar"] .stSlider > div > div > div {
-    background: #00B4D8 !important;
-}
-[data-testid="stSidebar"] label {
-    font-size: 11px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.4) !important;
-}
-[data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #ffffff !important;
-}
 
 /* ── Main area (FIXED) ── */
 .main .block-container {
@@ -215,48 +196,6 @@ div[data-testid="stVerticalBlock"] {
 .ns-upload-text { font-size: 13px; color: #374151; margin-bottom: 4px; }
 .ns-upload-hint { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: #9ca3af; }
 
-.ns-channel-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 11px;
-    color: rgba(255,255,255,0.5);
-    border-bottom: 0.5px solid rgba(255,255,255,0.05);
-}
-.ns-channel-row:last-child { border-bottom: none; }
-.ns-channel-val {
-    font-family: 'IBM Plex Mono', monospace;
-    color: rgba(255,255,255,0.85);
-    font-size: 11px;
-}
-.ns-dot-ok { width:5px; height:5px; border-radius:50%; background:#52B788; display:inline-block; margin-right:6px; }
-.ns-dot-warn { width:5px; height:5px; border-radius:50%; background:#F4A261; display:inline-block; margin-right:6px; }
-
-.ns-patient-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0 0;
-    border-top: 0.5px solid rgba(255,255,255,0.07);
-}
-.ns-avatar {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: rgba(0,180,216,0.2);
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 500; color: #00B4D8 !important;
-}
-.ns-patient-name { font-size: 12px; color: rgba(255,255,255,0.8) !important; }
-.ns-patient-id { font-size: 10px; font-family: 'IBM Plex Mono', monospace; color: rgba(255,255,255,0.3) !important; }
-
-.ns-section-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: rgba(255,255,255,0.3);
-    margin: 0 0 10px;
-}
-
 /* Streamlit button override */
 .stButton > button {
     background: #0A1628 !important;
@@ -344,53 +283,6 @@ model = load_model()
 
 
 # ==========================================
-# SIDEBAR
-# ==========================================
-with st.sidebar:
-    st.markdown("""
-    <div style="padding:20px 4px 14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:18px;">🧠</span>
-            <span style="font-size:14px;font-weight:500;color:#ffffff;">NeuroScreen</span>
-        </div>
-        <div style="font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-left:26px;">
-            Cognitive Risk Platform
-        </div>
-    </div>
-    <hr style="border:none;border-top:0.5px solid rgba(255,255,255,0.07);margin:0 0 16px;">
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="ns-section-label">Patient demographics</div>', unsafe_allow_html=True)
-    age       = st.slider("Age", 20, 100, 65)
-    sex_input = st.radio("Sex", ["Male", "Female"], horizontal=True)
-    bmi       = st.slider("BMI", 10.0, 50.0, 25.0, step=0.5)
-
-    st.markdown('<hr style="border:none;border-top:0.5px solid rgba(255,255,255,0.07);margin:16px 0;">', unsafe_allow_html=True)
-    st.markdown('<div class="ns-section-label">Channel status</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="ns-channel-row"><span><span class="ns-dot-ok"></span>EEG signal</span><span class="ns-channel-val">100 Hz</span></div>
-    <div class="ns-channel-row"><span><span class="ns-dot-ok"></span>ECG signal</span><span class="ns-channel-val">100 Hz</span></div>
-    <div class="ns-channel-row"><span><span class="ns-dot-ok"></span>Samples</span><span class="ns-channel-val">120,000</span></div>
-    <div class="ns-channel-row"><span><span class="ns-dot-warn"></span>Model fold</span><span class="ns-channel-val">Fold 3</span></div>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<hr style="border:none;border-top:0.5px solid rgba(255,255,255,0.07);margin:16px 0;">', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="ns-patient-chip">
-        <div class="ns-avatar">JA</div>
-        <div>
-            <div class="ns-patient-name">James Adebayo</div>
-            <div class="ns-patient-id">PID-00472</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
-sex_val         = 1.0 if sex_input == "Male" else 0.0
-metadata_tensor = torch.tensor([[age, sex_val, bmi]], dtype=torch.float32)
-
-
-# ==========================================
 # MAIN CONTENT
 # ==========================================
 
@@ -430,7 +322,23 @@ with m3:
         <div class="ns-metric-sub">Samples at 100 Hz</div>
     </div>""", unsafe_allow_html=True)
 
-st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
+
+# ── Patient Demographics (Moved to Main Screen) ──
+st.markdown('<div class="ns-panel-title" style="margin-bottom:12px;">📋 &nbsp;Patient Demographics</div>', unsafe_allow_html=True)
+
+d1, d2, d3 = st.columns(3)
+with d1:
+    age = st.number_input("Age (Years)", 18, 100, 65)
+with d2:
+    sex_input = st.selectbox("Biological Sex", ["Male", "Female"])
+with d3:
+    bmi = st.number_input("BMI", 10.0, 50.0, 25.0, step=0.1)
+
+sex_val = 1.0 if sex_input == "Male" else 0.0
+metadata_tensor = torch.tensor([[age, sex_val, bmi]], dtype=torch.float32)
+
+st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
 
 # ── Upload + Run ──
 st.markdown("""
