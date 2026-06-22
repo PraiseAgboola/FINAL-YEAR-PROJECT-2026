@@ -14,7 +14,7 @@ import os
 # PAGE CONFIG & GLOBAL STYLES
 # ==========================================
 st.set_page_config(
-    page_title="NeuroScreen · Cognitive Risk Platform",
+    page_title="COGNIFLOW · Cognitive Impairment Predictor",
     layout="wide",
     initial_sidebar_state="expanded",
 )
