@@ -20,11 +20,11 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 /* ── Global reset ── */
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'Syne', sans-serif !important;
 }
 
 /* ── Hide Streamlit chrome ── */
@@ -32,11 +32,11 @@ html, body, [class*="css"] {
 header { background: transparent !important; }
 .block-container { padding: 0 !important; }
 
-/* ── Main area (FIXED) ── */
+/* ── Main area ── */
 .main .block-container {
     max-width: 100% !important;
     padding: 0 !important;
-    overflow: visible !important; 
+    overflow: visible !important;
     display: block !important;
 }
 div[data-testid="stVerticalBlock"] {
@@ -45,7 +45,7 @@ div[data-testid="stVerticalBlock"] {
     gap: 1rem !important;
 }
 
-/* ── Custom components ── */
+/* ── Topbar ── */
 .ns-topbar {
     background: #ffffff;
     border-bottom: 0.5px solid #e5e7eb;
@@ -58,7 +58,25 @@ div[data-testid="stVerticalBlock"] {
     top: 0;
     z-index: 100;
 }
+.ns-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ns-logo-mark {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0A1628;
+    letter-spacing: 0.06em;
+}
+.ns-logo-sep {
+    width: 1px;
+    height: 16px;
+    background: #e5e7eb;
+}
 .ns-breadcrumb {
+    font-family: 'Syne', sans-serif;
     font-size: 12px;
     color: #9ca3af;
     letter-spacing: 0.01em;
@@ -68,6 +86,7 @@ div[data-testid="stVerticalBlock"] {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    font-family: 'Syne', sans-serif;
     font-size: 11px;
     color: #065f46;
     background: #d1fae5;
@@ -77,6 +96,7 @@ div[data-testid="stVerticalBlock"] {
 }
 .ns-dot { width:6px; height:6px; border-radius:50%; background:#10b981; display:inline-block; }
 
+/* ── Metric cards ── */
 .ns-metric {
     background: #ffffff;
     border: 0.5px solid #e5e7eb;
@@ -84,9 +104,10 @@ div[data-testid="stVerticalBlock"] {
     padding: 14px 16px;
 }
 .ns-metric-label {
+    font-family: 'Syne', sans-serif;
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: #9ca3af;
     margin-bottom: 6px;
 }
@@ -97,8 +118,14 @@ div[data-testid="stVerticalBlock"] {
     color: #111827;
     line-height: 1;
 }
-.ns-metric-sub { font-size: 10px; color: #9ca3af; margin-top: 4px; }
+.ns-metric-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
 
+/* ── Panels ── */
 .ns-panel {
     background: #ffffff;
     border: 0.5px solid #e5e7eb;
@@ -113,10 +140,11 @@ div[data-testid="stVerticalBlock"] {
     justify-content: space-between;
 }
 .ns-panel-title {
+    font-family: 'Syne', sans-serif;
     font-size: 12px;
     font-weight: 500;
     color: #374151;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
 }
 .ns-panel-tag {
     font-family: 'IBM Plex Mono', monospace;
@@ -125,6 +153,7 @@ div[data-testid="stVerticalBlock"] {
 }
 .ns-panel-body { padding: 14px 16px; }
 
+/* ── Detail rows ── */
 .ns-detail-row {
     display: flex;
     justify-content: space-between;
@@ -134,56 +163,67 @@ div[data-testid="stVerticalBlock"] {
     font-size: 12px;
 }
 .ns-detail-row:last-child { border-bottom: none; }
-.ns-detail-key { color: #6b7280; }
+.ns-detail-key {
+    font-family: 'Syne', sans-serif;
+    color: #6b7280;
+}
 .ns-detail-val {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 500;
     color: #111827;
 }
 
+/* ── Risk panels ── */
 .ns-risk-high {
     background: #fef2f2;
     border: 0.5px solid #fecaca;
     border-left: 3px solid #ef4444;
-    border-radius: 8px;
+    border-radius: 0 8px 8px 0;
     padding: 14px 16px;
 }
 .ns-risk-mod {
     background: #fffbeb;
     border: 0.5px solid #fde68a;
     border-left: 3px solid #f59e0b;
-    border-radius: 8px;
+    border-radius: 0 8px 8px 0;
     padding: 14px 16px;
 }
 .ns-risk-low {
     background: #f0fdf4;
     border: 0.5px solid #bbf7d0;
     border-left: 3px solid #22c55e;
-    border-radius: 8px;
+    border-radius: 0 8px 8px 0;
     padding: 14px 16px;
 }
 .ns-risk-title {
+    font-family: 'Syne', sans-serif;
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 2px;
+    letter-spacing: 0.01em;
 }
 .ns-risk-score {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 500;
     line-height: 1;
     margin: 8px 0 4px;
 }
-.ns-risk-label { font-size: 11px; color: #6b7280; }
-
+.ns-risk-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    color: #6b7280;
+    letter-spacing: 0.02em;
+}
 .ns-conf-bar-track {
     height: 5px;
     background: #f3f4f6;
     border-radius: 99px;
     overflow: hidden;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
+/* ── Upload zone ── */
 .ns-upload-zone {
     border: 0.5px dashed #d1d5db;
     border-radius: 10px;
@@ -193,27 +233,55 @@ div[data-testid="stVerticalBlock"] {
     cursor: pointer;
 }
 .ns-upload-icon { font-size: 28px; margin-bottom: 8px; }
-.ns-upload-text { font-size: 13px; color: #374151; margin-bottom: 4px; }
-.ns-upload-hint { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: #9ca3af; }
+.ns-upload-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 4px;
+}
+.ns-upload-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #9ca3af;
+}
 
-/* Streamlit button override */
+/* ── Section label ── */
+.ns-section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #374151;
+    letter-spacing: 0.03em;
+    margin-bottom: 12px;
+}
+
+/* ── Streamlit input label override ── */
+[data-testid="stNumberInput"] label,
+[data-testid="stSelectbox"] label {
+    font-family: 'Syne', sans-serif !important;
+    font-size: 12px !important;
+    color: #6b7280 !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* ── Streamlit button override ── */
 .stButton > button {
     background: #0A1628 !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'Syne', sans-serif !important;
     font-size: 13px !important;
     font-weight: 500 !important;
     padding: 10px 20px !important;
     width: 100% !important;
-    letter-spacing: 0.01em !important;
+    letter-spacing: 0.04em !important;
 }
 .stButton > button:hover {
     background: #152236 !important;
 }
 
-/* Page background */
+/* ── Page background ── */
 .stApp { background: #f8fafc !important; }
 </style>
 """, unsafe_allow_html=True)
@@ -289,7 +357,11 @@ model = load_model()
 # Top bar
 st.markdown("""
 <div class="ns-topbar">
-    <div class="ns-breadcrumb">Screening / <b>Cognitive Impairment</b></div>
+    <div class="ns-logo">
+        <span class="ns-logo-mark">COGNIFLOW</span>
+        <div class="ns-logo-sep"></div>
+        <span class="ns-breadcrumb">Screening / <b>Cognitive Impairment Predictor</b></span>
+    </div>
     <div style="display:flex;align-items:center;gap:12px;">
         <span class="ns-status"><span class="ns-dot"></span>Model ready</span>
     </div>
@@ -324,8 +396,8 @@ with m3:
 
 st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
 
-# ── Patient Demographics (Moved to Main Screen) ──
-st.markdown('<div class="ns-panel-title" style="margin-bottom:12px;">📋 &nbsp;Patient Demographics</div>', unsafe_allow_html=True)
+# ── Patient Demographics ──
+st.markdown('<div class="ns-section-label">📋 &nbsp;Patient Demographics</div>', unsafe_allow_html=True)
 
 d1, d2, d3 = st.columns(3)
 with d1:
@@ -340,7 +412,7 @@ metadata_tensor = torch.tensor([[age, sex_val, bmi]], dtype=torch.float32)
 
 st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
 
-# ── Upload + Run ──
+# ── Upload panel ──
 st.markdown("""
 <div class="ns-panel">
     <div class="ns-panel-header">
@@ -397,22 +469,19 @@ if uploaded_file is not None:
 
                 st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
-                # ── Result risk badge ──
+                # ── Risk classification ──
                 if risk > 50:
                     risk_cls   = "ns-risk-high"
                     risk_color = "#dc2626"
                     verdict    = "High risk of cognitive impairment"
-                    badge_bg   = "#fef2f2"; badge_color = "#991b1b"
                 elif risk > 30:
                     risk_cls   = "ns-risk-mod"
                     risk_color = "#d97706"
                     verdict    = "Moderate risk — further evaluation recommended"
-                    badge_bg   = "#fffbeb"; badge_color = "#92400e"
                 else:
                     risk_cls   = "ns-risk-low"
                     risk_color = "#16a34a"
                     verdict    = "Low risk of cognitive impairment"
-                    badge_bg   = "#f0fdf4"; badge_color = "#166534"
 
                 bar_w = int(risk)
 
@@ -422,7 +491,7 @@ if uploaded_file is not None:
                     st.markdown(f"""
                     <div class="{risk_cls}">
                         <div class="ns-risk-title" style="color:{risk_color};">{verdict}</div>
-                        <div class="ns-risk-score" style="color:{risk_color};">{risk:.1f}<span style="font-size:18px;">%</span></div>
+                        <div class="ns-risk-score" style="color:{risk_color};">{risk:.1f}<span style="font-size:20px;">%</span></div>
                         <div class="ns-risk-label">Impairment probability</div>
                         <div class="ns-conf-bar-track">
                             <div style="height:5px;width:{bar_w}%;background:{risk_color};border-radius:99px;"></div>
@@ -478,7 +547,7 @@ if uploaded_file is not None:
                 fig, axes = plt.subplots(2, 1, figsize=(11, 3.6))
                 fig.patch.set_facecolor('#ffffff')
 
-                t = np.linspace(0, 10, 1000)
+                t       = np.linspace(0, 10, 1000)
                 colors  = ['#378ADD', '#E24B4A']
                 labels  = [f'Cortical EEG  ·  {eeg_ch}', f'Cardiac ECG  ·  {ecg_ch}']
                 channel = [signals[0, :1000], signals[1, :1000]]
@@ -504,8 +573,8 @@ if uploaded_file is not None:
             except Exception as e:
                 st.markdown(f"""
                 <div style="background:#fef2f2;border:0.5px solid #fecaca;border-left:3px solid #ef4444;
-                            border-radius:8px;padding:14px 16px;font-size:13px;color:#7f1d1d;">
-                    <b>Processing error</b><br>
+                            border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;color:#7f1d1d;">
+                    <b style="font-family:'Syne',sans-serif;">Processing error</b><br>
                     Ensure the EDF file contains EEG and ECG channels.<br>
                     <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#991b1b;">{e}</span>
                 </div>
@@ -518,7 +587,8 @@ elif uploaded_file is None:
     st.markdown("""
     <div style="height:16px"></div>
     <div style="background:#f1f5f9;border:0.5px solid #e2e8f0;border-radius:10px;
-                padding:28px;text-align:center;color:#94a3b8;font-size:13px;">
+                padding:28px;text-align:center;color:#94a3b8;font-size:13px;
+                font-family:'Syne',sans-serif;">
         Upload a .edf polysomnography file above to begin screening
     </div>
     """, unsafe_allow_html=True)
@@ -530,8 +600,10 @@ st.markdown("""
 <div style="padding:12px 28px;border-top:0.5px solid #e5e7eb;margin-top:8px;
             display:flex;justify-content:space-between;align-items:center;">
     <span style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:#9ca3af;">
-        NeuroScreen v1.0 · 1D-Inception Late Fusion · For research use only
+        COGNIFLOW v1.0 · 1D-Inception Late Fusion · For research use only
     </span>
-    <span style="font-size:10px;color:#9ca3af;">Not a clinical diagnostic tool</span>
+    <span style="font-size:10px;font-family:'Syne',sans-serif;color:#9ca3af;">
+        Not a clinical diagnostic tool
+    </span>
 </div>
 """, unsafe_allow_html=True)
