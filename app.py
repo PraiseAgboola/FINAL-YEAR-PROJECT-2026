@@ -288,6 +288,23 @@ div[data-testid="stVerticalBlock"] {
 
 
 # ==========================================
+# CHANNEL NAMING CONVENTIONS
+# ==========================================
+# PhysioNet Challenge 2026 recordings usually label channels with standard
+# 10-20 derivations (e.g. 'F3-M2', 'C3-M2') rather than a literal "EEG"
+# substring, and the cardiac channel is frequently called 'EKG' rather than
+# 'ECG'. This list mirrors the channel-matching logic used in the training
+# notebook (Cells 1, 4 and 5) so that inference here behaves identically to
+# training. If your files use different derivations, add them here.
+EEG_DERIVATIONS = ['F3-M2', 'F4-M1', 'C3-M2', 'C4-M1', 'O1-M2', 'O2-M1']
+
+# Matches the 20-minute window (120,000 samples @ 100 Hz) used in training.
+MAX_TIMESTEPS = 120_000
+TARGET_SFREQ = 100
+MAX_SECONDS = 20 * 60
+
+
+# ==========================================
 # MODEL ARCHITECTURE
 # ==========================================
 class InceptionBlock1D(nn.Module):
@@ -340,14 +357,63 @@ class MultiModalCognitiveClassifier(nn.Module):
         return self.classifier(torch.cat([sf, mf], dim=1))
 
 
+CHECKPOINT_PATH = 'best_model_fold_3.pth'
+
+
 @st.cache_resource
 def load_model():
+    """Load the trained checkpoint.
+
+    Fails loudly with a plain-English Streamlit error (instead of a raw
+    Python traceback) if the checkpoint file was not committed alongside
+    app.py — this is the single most common reason a freshly-cloned copy
+    of this repo won't run.
+    """
+    if not os.path.exists(CHECKPOINT_PATH):
+        st.error(
+            f"Model checkpoint '{CHECKPOINT_PATH}' was not found next to app.py.\n\n"
+            "Download it from your Kaggle notebook's output "
+            f"(/kaggle/working/{CHECKPOINT_PATH}) and place it in the same "
+            "folder as this app before running it — see the README for "
+            "step-by-step instructions."
+        )
+        st.stop()
+
     model = MultiModalCognitiveClassifier()
-    model.load_state_dict(torch.load('best_model_fold_3.pth', map_location='cpu'))
+    model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location='cpu'))
     model.eval()
     return model
 
+
 model = load_model()
+
+
+def find_eeg_ecg_channels(raw):
+    """Locate the EEG and ECG channels in a loaded EDF recording.
+
+    Checks both literal 'EEG'/'ECG' substrings AND the standard 10-20
+    derivation names / 'EKG' label actually used in this dataset's files
+    (see EEG_DERIVATIONS above). Without the derivation/EKG fallback, this
+    lookup fails silently on most real PhysioNet Challenge 2026 recordings,
+    whose channels are named things like 'F3-M2' and 'EKG' rather than
+    'EEG Fpz-Cz' or 'ECG'.
+    """
+    eeg_matches = [
+        ch for ch in raw.ch_names
+        if 'EEG' in ch.upper() or ch in EEG_DERIVATIONS
+    ]
+    ecg_matches = [
+        ch for ch in raw.ch_names
+        if 'ECG' in ch.upper() or 'EKG' in ch.upper()
+    ]
+
+    if not eeg_matches or not ecg_matches:
+        raise ValueError(
+            "Could not find an EEG or ECG channel in this file. "
+            f"Channels present: {', '.join(raw.ch_names)}"
+        )
+
+    return eeg_matches[0], ecg_matches[0]
 
 
 # ==========================================
@@ -428,7 +494,7 @@ if uploaded_file is None:
     <div class="ns-upload-zone">
         <div class="ns-upload-icon">⬆️</div>
         <div class="ns-upload-text">Drop .edf file here or use the uploader above</div>
-        <div class="ns-upload-hint">Expects EEG Fpz-Cz and ECG channels after standard PSG recording</div>
+        <div class="ns-upload-hint">Expects EEG (10-20 derivation) and ECG/EKG channels from a standard PSG recording</div>
     </div>""", unsafe_allow_html=True)
 
 if uploaded_file is not None:
@@ -444,19 +510,33 @@ if uploaded_file is not None:
                 tmp_path = tmp.name
 
             try:
-                raw = mne.io.read_raw_edf(tmp_path, preload=True, verbose=False)
-                matched = [ch for ch in raw.ch_names if any(t in ch.upper() for t in ['EEG', 'ECG'])]
-                eeg_ch  = [c for c in matched if 'EEG' in c.upper()][0]
-                ecg_ch  = [c for c in matched if 'ECG' in c.upper()][0]
+                # preload=False defers reading signal data until after we've
+                # picked the 2 channels we actually need. A full overnight
+                # PSG file can have 15-20 channels; loading all of them
+                # (as this app previously did with preload=True) is
+                # unnecessary and can exhaust memory on constrained hosting
+                # tiers such as Streamlit Community Cloud's free plan.
+                raw = mne.io.read_raw_edf(tmp_path, preload=False, verbose=False)
+
+                eeg_ch, ecg_ch = find_eeg_ecg_channels(raw)
                 raw.pick_channels([eeg_ch, ecg_ch], verbose=False)
-                raw.resample(100, verbose=False)
+
+                # Crop to the training window (20 minutes) before loading,
+                # but guard against recordings shorter than that — MNE's
+                # crop() raises an error if tmax exceeds the recording
+                # length, which otherwise crashes on short uploads.
+                available_seconds = raw.times[-1]
+                raw.crop(tmin=0, tmax=min(MAX_SECONDS, available_seconds))
+
+                raw.load_data(verbose=False)
+                raw.resample(TARGET_SFREQ, verbose=False)
                 signals = raw.get_data()
 
-                max_len = 120_000
-                if signals.shape[1] >= max_len:
-                    signals = signals[:, :max_len]
+                if signals.shape[1] >= MAX_TIMESTEPS:
+                    signals = signals[:, :MAX_TIMESTEPS]
                 else:
-                    signals = np.pad(signals, ((0,0),(0, max_len - signals.shape[1])))
+                    pad_width = MAX_TIMESTEPS - signals.shape[1]
+                    signals = np.pad(signals, ((0, 0), (0, pad_width)))
 
                 signals_tensor = torch.tensor(signals, dtype=torch.float32)
 
